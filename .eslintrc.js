@@ -4,6 +4,10 @@ module.exports = {
         "es6": true
     },
     "parser": '@typescript-eslint/parser',
+    "plugins": [
+        'prettier', 
+        'import'
+    ],
     "extends": [
         'plugin:@typescript-eslint/recommended',
         'airbnb-base',
@@ -22,6 +26,7 @@ module.exports = {
         "linebreak-style": "off",
         "camelcase":"off",
         "no-console": "off",
+        "consistent-return": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
     },
     "settings": {

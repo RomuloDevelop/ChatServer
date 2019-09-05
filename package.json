@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --inspect=5858 -r ts-node/register server/server.ts",
-    "start:watch": "nodemon",
-    "build": "tsc"
+    "dev": "ts-node server/server.ts",
+    "dev:watch": "nodemon",
+    "build": "tsc",
+    "start": "build && node dist/server/server.ts"
   },
   "author": "Romulo Corona",
   "license": "MIT",
@@ -43,9 +44,9 @@
       "node_modules"
     ],
     "watch": [
-      "server"
+      "server/**/*.ts"
     ],
-    "exec": "npm start",
+    "exec": "npm run dev",
     "ext": "ts"
   }
 }

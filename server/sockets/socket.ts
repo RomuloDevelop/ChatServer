@@ -1,32 +1,53 @@
+import Users from '../models/Users';
+import Person from '../models/Person';
+import createMessage from '../utils';
+
+const users = new Users();
+
 const connectSocket = (io: SocketIO.Server) => {
   io.on('connection', (client: SocketIO.Socket) => {
-    console.log('Usuario conectado');
-
-    client.emit('enviarMensaje', {
-      usuario: 'Administrador',
-      mensaje: 'Bienvenido a esta aplicación',
+    client.on('enterChat', (user, cb) => {
+      if (!user.name || !user.room) {
+        return cb({
+          err: true,
+          message: 'The name/room is mandatory',
+        });
+      }
+      client.join(user.room);
+      const person = new Person(client.id, user.name, user.room);
+      users.addPersons(person);
+      const personsByRoom = users.getPersonsByRoom(user.room);
+      client.broadcast.to(user.room).emit('personList', personsByRoom);
+      cb(personsByRoom);
     });
 
     client.on('disconnect', () => {
-      console.log('Usuario desconectado');
+      const person = users.deletePerson(client.id);
+      if (!person) return;
+      const { name, room } = person;
+      client.broadcast
+        .to(room)
+        .emit(
+          'createMessage',
+          createMessage('Administrator', `${name} leave the chat`)
+        );
+      client.broadcast
+        .to(room)
+        .emit('personList', users.getPersonsByRoom(room));
     });
 
-    // Escuchar el cliente
-    client.on('enviarMensaje', (data: any) => {
-      console.log(data);
+    client.on('createMessage', data => {
+      const person = users.getPerson(client.id);
+      const message = createMessage(person.name, data.message);
+      client.broadcast.to(person.room).emit('createMessage', message);
+      console.log('Servidor', message);
+    });
 
-      client.broadcast.emit('enviarMensaje', data);
-
-      // if (mensaje.usuario) {
-      //     callback({
-      //         resp: 'TODO SALIO BIEN!'
-      //     });
-
-      // } else {
-      //     callback({
-      //         resp: 'TODO SALIO MAL!!!!!!!!'
-      //     });
-      // }
+    client.on('privateMessage', data => {
+      const user = users.getPerson(client.id);
+      client.broadcast
+        .to(data.to)
+        .emit('privateMessage', createMessage(user.name, data.message));
     });
   });
 };

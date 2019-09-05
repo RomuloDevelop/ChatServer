@@ -3,33 +3,36 @@ import Person from './Person';
 class Users {
   public persons: Array<Person>;
 
-  constructor() {
-    this.persons = [];
+  constructor(persons?: Array<Person>) {
+    if (persons == null) this.persons = [];
+    else this.persons = persons;
   }
 
-  addPersons(id: string, name: string) {
-    const person = new Person(id, name);
+  addPersons(person: Person): Array<Person> {
     this.persons.push(person);
     return this.persons;
   }
 
-  getPerson(id: string) {
+  getPerson(id: string): Person {
     const person = this.persons.filter(item => item.id === id)[0];
     return person;
   }
 
-  getPersons() {
+  getPersons(): Array<Person> {
     return this.persons;
   }
 
-  deletePerson(id: string) {
+  deletePerson(id: string): Person {
     const deletedPerson = this.getPerson(id);
     this.persons = this.persons.filter(person => person.id !== id);
 
     return deletedPerson;
   }
 
-  // getPersonsByRoom() {}
+  getPersonsByRoom(room: string): Array<Person> {
+    const persons = this.persons.filter(item => item.room === room);
+    return persons;
+  }
 }
 
 export default Users;
