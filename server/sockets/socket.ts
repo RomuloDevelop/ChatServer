@@ -36,11 +36,11 @@ const connectSocket = (io: SocketIO.Server) => {
         .emit('personList', users.getPersonsByRoom(room));
     });
 
-    client.on('createMessage', data => {
+    client.on('createMessage', (data, cb) => {
       const person = users.getPerson(client.id);
       const message = createMessage(person.name, data.message);
       client.broadcast.to(person.room).emit('createMessage', message);
-      console.log('Servidor', message);
+      cb(message);
     });
 
     client.on('privateMessage', data => {

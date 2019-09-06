@@ -17,7 +17,8 @@ socket.on('connect', function() {
     
     socket.emit('enterChat', user, function(resp) {
 
-        console.log(resp);
+        //console.log(resp);
+        userRender(resp);
 
     });
     console.log('Connected to chat');
@@ -29,12 +30,13 @@ socket.on('disconnect', function() {
 
 });
 
-socket.on('createMessage', function(data) {
-    console.log('Servidor: ',data);
+socket.on('createMessage', function(message) {
+    renderMessage(message, false);
+    console.log('Servidor: ',message);
 });
 
-socket.on('personList', function(users) {
-    console.log(users);
+socket.on('personList', function(persons) {
+    userRender(persons);    
 });
 
 socket.on('privateMessage', function(message) {
